@@ -35,15 +35,12 @@
             android:layout_height="match_parent"
             android:layout_above="@id/ll_image_cropper_action"/>
 
-    <FrameLayout
+
+    <com.imageCropper.android.liabrary.ImageFocus
+            android:id="@id/img_image_cropper_cropper"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <com.imageCropper.android.liabrary.ImageFocus
-                android:id="@id/img_image_cropper_cropper"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_above="@id/ll_image_cropper_action"/>
-    </FrameLayout>
+            android:layout_height="match_parent"
+            android:layout_above="@id/ll_image_cropper_action"/>
 
 
 </RelativeLayout>
