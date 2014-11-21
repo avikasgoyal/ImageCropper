@@ -8,11 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import com.imageCropper.android.R;
-import com.imageCropper.android.liabrary.ImageCropperView;
-import com.imageCropper.android.liabrary.ImageCroppingCallback;
+import com.imageCropper.android.liabrary.CropperCallback;
+import com.imageCropper.android.liabrary.ImageCropper;
 import com.imageCropper.android.liabrary.Status;
 
-public class SampleActivity extends Activity implements ImageCroppingCallback {
+public class SampleActivity extends Activity implements CropperCallback {
     private View mContentView = null;
 
     /**
@@ -22,9 +22,14 @@ public class SampleActivity extends Activity implements ImageCroppingCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContentView = LayoutInflater.from(this).inflate(R.layout.main, null);
-        Bitmap croppingImage = BitmapFactory.decodeResource(getResources(), R.drawable.images);
-        ImageCropperView imageCropperView = new ImageCropperView(this, croppingImage, this);
         setContentView(mContentView);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Bitmap croppingImage = BitmapFactory.decodeResource(getResources(), R.drawable.images);
+        ImageCropper imageCropper = new ImageCropper(SampleActivity.this, croppingImage, this);
     }
 
     @Override

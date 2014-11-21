@@ -10,7 +10,7 @@ import android.graphics.Paint;
  * Use it to hold bitmaps that are generated once on view initialization and drawn on view canvas there after.
  */
 public class DrawLayer {
-    private static final float BITMAP_SCALE = 0.5f;
+    private static final float BITMAP_SCALE = 1.0f;
     private final Paint mPaint = new Paint();
     private final Canvas mCanvas;
     private Matrix mMatrix = new Matrix();
@@ -49,7 +49,7 @@ public class DrawLayer {
      * @param canvas canvas to draw layer onto.
      */
     public void draw(Canvas canvas) {
-        if (canvas!= null && mBitmap != null && !mBitmap.isRecycled()) {
+        if (canvas != null && mBitmap != null && !mBitmap.isRecycled()) {
             canvas.drawBitmap(mBitmap, mMatrix2, mPaint);
         }
     }
@@ -101,7 +101,9 @@ public class DrawLayer {
         if (mBitmap != null) {
             mBitmap.recycle();
             mBitmap = null;
-            mCanvas.setBitmap(null);
+            if (mCanvas != null) {
+                mCanvas.setBitmap(null);
+            }
         }
     }
 
@@ -145,7 +147,7 @@ public class DrawLayer {
     }
 
 
-    public void clearLayer(){
+    public void clearLayer() {
         float width = mWidth;
         float height = mHeight;
         destroy();

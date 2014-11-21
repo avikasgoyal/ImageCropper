@@ -3,7 +3,6 @@ package com.imageCropper.android.liabrary;
 import android.content.Context;
 import android.graphics.*;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -13,15 +12,16 @@ import com.imageCropper.android.liabrary.animation.SimpleAnim;
 
 public class ImageFocus extends View {
     private static final long ANIM_DURATION = 800L;
-    private static final PorterDuffXfermode CLEAR_CIRCLE = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
-    private DrawLayer mDrawLayer;
+    private static final PorterDuffXfermode CLEAR_MODE = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
+    private static final PorterDuffXfermode SRC_MODE = new PorterDuffXfermode(PorterDuff.Mode.SRC);
     private Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint mClearPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private int mFocusRadius = 0;
     private int mFocusBorderRadius = mFocusRadius + 2;
     private Paint mBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private boolean mIsAnimating = false;
     private PointF mFocusCenter = new PointF();
+    private Rect mRect = new Rect();
 
 
     /**
@@ -51,80 +51,69 @@ public class ImageFocus extends View {
     }
 
     private void initView() {
-        mBackgroundPaint.setColor(Color.argb(100, 0, 0, 0));
+        mBackgroundPaint.setColor(Color.argb(155, 0, 0, 0));
         mBackgroundPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
-        mCirclePaint.setStyle(Paint.Style.FILL);
-        mCirclePaint.setXfermode(CLEAR_CIRCLE);
-        mCirclePaint.setAntiAlias(true);
+        mClearPaint.setStyle(Paint.Style.FILL);
+        mClearPaint.setColor(Color.TRANSPARENT);
+        mClearPaint.setXfermode(CLEAR_MODE);
+        mClearPaint.setAntiAlias(true);
+        mClearPaint.setDither(true);
+
 
         mBorderPaint.setColor(Color.WHITE);
         mBorderPaint.setStyle(Paint.Style.STROKE);
-        mBorderPaint.setStrokeWidth(1);
+        mBorderPaint.setStrokeWidth(2);
         mBorderPaint.setAntiAlias(true);
+        mBorderPaint.setStrokeJoin(Paint.Join.ROUND);
 
-        mDrawLayer = new DrawLayer();
-        setLayerType(View.LAYER_TYPE_HARDWARE, null);
+//        setLayerType(View.LAYER_TYPE_HARDWARE, null);
     }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        mDrawLayer.destroy();
-    }
-
-    /**
-     *
-     */
-    public void moveImageFocus() {
-        MoveCircleAnim moveAnim = new MoveCircleAnim(100);
-        moveAnim.setFillAfter(true);
-        startAnimation(moveAnim);
-        invalidate();
-    }
-
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int minIn = Math.min(getMeasuredHeight(), getMeasuredWidth());
-        mFocusRadius = minIn / 3;
+        setFocusRadius(minIn / 3);
         mFocusCenter.set(getMeasuredWidth() / 2, getMeasuredHeight() / 2);
+
+        mRect = new Rect(0, 0, getMeasuredWidth(), getMeasuredHeight());
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        initDrawLayer();
-        mDrawLayer.draw(canvas);
+
+        canvas.drawRect(mRect, mBackgroundPaint);
+
         canvas.drawRect(mFocusCenter.x - mFocusBorderRadius, mFocusCenter.y - mFocusBorderRadius,
                 mFocusCenter.x + mFocusBorderRadius, mFocusCenter.y + mFocusBorderRadius, mBorderPaint);
-        canvas.drawRect(mFocusCenter.x - mFocusRadius, mFocusCenter.y - mFocusRadius,
-                mFocusCenter.x + mFocusRadius, mFocusCenter.y + mFocusRadius, mBorderPaint);
 
-    }
+         canvas.drawRect(mFocusCenter.x - mFocusRadius, mFocusCenter.y - mFocusRadius,
+                mFocusCenter.x + mFocusRadius, mFocusCenter.y + mFocusRadius, mClearPaint);
 
-    private void initDrawLayer() {
-        if (!mDrawLayer.isInitialized()) {
-            Rect rect = new Rect(0, 0, getMeasuredWidth(), getMeasuredHeight());
-            mDrawLayer.init(getMeasuredWidth(), getMeasuredHeight());
-            mDrawLayer.getCanvas().drawRect(rect, mBackgroundPaint);
-        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(isTouchInside(event)){
-            Log.e("Touch :", "Inside");
+        if (isTouchInside(event)) {
+            mFocusCenter.set(event.getX(), event.getY());
+            invalidate();
         }
-        mFocusCenter.set(event.getX(), event.getY());
         return true;
     }
 
     private boolean isTouchInside(MotionEvent event) {
         RectF currentRect = new RectF(mFocusCenter.x - mFocusRadius, mFocusCenter.y - mFocusRadius,
                 mFocusCenter.x + mFocusRadius, mFocusCenter.y + mFocusRadius);
-        return (currentRect.contains(event.getX(), event.getY()));
+
+        int minX = (int) (event.getX() - mFocusBorderRadius);
+        int minY = (int) (event.getY() - mFocusBorderRadius);
+        int maxX = (int) (event.getX() + mFocusBorderRadius);
+        int maxY = (int) (event.getY() + mFocusBorderRadius);
+        getHitRect(mRect);
+        return (currentRect.contains(event.getX(), event.getY())) && (mRect.contains(minX, minY))
+                && (mRect.contains(maxX, maxY));
     }
 
     private class MoveCircleAnim extends SimpleAnim {
