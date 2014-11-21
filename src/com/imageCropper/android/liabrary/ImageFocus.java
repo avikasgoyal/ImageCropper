@@ -12,8 +12,8 @@ import com.imageCropper.android.liabrary.animation.SimpleAnim;
 
 public class ImageFocus extends View {
     private static final long ANIM_DURATION = 800L;
-    private static final PorterDuffXfermode CLEAR_MODE = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
-    private static final PorterDuffXfermode SRC_MODE = new PorterDuffXfermode(PorterDuff.Mode.SRC);
+    private static final PorterDuffXfermode CLEAR_MODE = new PorterDuffXfermode(PorterDuff.Mode.XOR);
+
     private Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mClearPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private int mFocusRadius = 0;
@@ -51,11 +51,11 @@ public class ImageFocus extends View {
     }
 
     private void initView() {
-        mBackgroundPaint.setColor(Color.argb(155, 0, 0, 0));
+        mBackgroundPaint.setColor(Color.argb(180, 0, 0, 0));
         mBackgroundPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
         mClearPaint.setStyle(Paint.Style.FILL);
-        mClearPaint.setColor(Color.TRANSPARENT);
+//        mClearPaint.setColor(Color.TRANSPARENT);
         mClearPaint.setXfermode(CLEAR_MODE);
         mClearPaint.setAntiAlias(true);
         mClearPaint.setDither(true);

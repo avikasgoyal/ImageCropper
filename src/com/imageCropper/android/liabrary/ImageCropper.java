@@ -2,7 +2,9 @@ package com.imageCropper.android.liabrary;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.view.*;
 import android.widget.ImageView;
 import com.imageCropper.android.R;
@@ -23,13 +25,23 @@ public class ImageCropper implements View.OnClickListener {
 
     /**
      * create a new instance of image cropper view
-     * @param context provide application context in it
+     *
+     * @param context       provide application context in it
      * @param croppingImage image which is need to crop
-     * @param callback callback listener cropped image
+     * @param callback      callback listener cropped image
      */
     public ImageCropper(Context context, Bitmap croppingImage, CropperCallback callback) {
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        mOriginalImage = croppingImage;
+
+        if (croppingImage.isMutable()) {
+            mOriginalImage = croppingImage;
+        } else {
+            mOriginalImage = croppingImage.copy(Bitmap.Config.ARGB_8888, true);
+            croppingImage.recycle();
+        }
+//      The bitmap is opaque, we need to enable alpha compositing.
+//      mOriginalImage.setHasAlpha(true);
+
         mContext = context;
         mCallbackListener = callback;
 
@@ -38,7 +50,7 @@ public class ImageCropper implements View.OnClickListener {
 
     private void initView() {
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT , WindowManager.LayoutParams.TYPE_APPLICATION,
+                WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.TYPE_APPLICATION,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 PixelFormat.RGBA_8888);
 
