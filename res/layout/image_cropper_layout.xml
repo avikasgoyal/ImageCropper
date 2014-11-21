@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:id="@id/ll_image_cropper_action"
+                  android:layout_alignParentBottom="true">
+
+        <Button android:layout_width="0dp" android:layout_height="match_parent"
+                android:id="@+id/btn_image_cropper_cancel"
+                android:textColor="@android:color/white"
+                android:padding="@dimen/padding_small"
+                android:textSize="@dimen/text_large"
+                android:background="@drawable/rounded_corner_hollow_rect"
+                android:layout_weight="1"
+                android:text="@string/cancel"/>
+
+        <Button android:layout_width="0dp" android:layout_height="match_parent"
+                android:id="@+id/btn_image_cropper_ok"
+                android:textColor="@android:color/white"
+                android:padding="@dimen/padding_small"
+                android:background="@drawable/rounded_corner_hollow_rect"
+                android:textSize="@dimen/text_large"
+                android:layout_weight="1"
+                android:text="@string/ok"/>
+
+    </LinearLayout>
+
+    <ImageView
+            android:id="@+id/img_image_cropper_cropper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/ll_image_cropper_action"/>
+
+    <com.imageCropper.android.liabrary.ImageFocus
+            android:id="@id/img_image_cropper_cropper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/ll_image_cropper_action"/>
+
+
+</RelativeLayout>
